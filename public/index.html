@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User API Key</title>
+  <style>
+    /* Menggunakan gambar latar belakang yang mirip dengan gambar Anda */
+    body {
+      font-family: Arial, sans-serif;
+      /* Ganti URL dengan gambar latar belakang pegunungan/hutan Anda */
+      background-image: url('images/ww.jpeg'); 
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center; /* Pusatkan vertikal */
+      height: 100vh; /* Memastikan body mengisi seluruh viewport */
+      margin: 0;
+    }
+
+    h1 {
+      color: #ffffff; /* Ubah warna teks menjadi putih */
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Tambahkan bayangan teks */
+      margin-bottom: 20px;
+    }
+
+    /* Styling untuk input */
+    input {
+      padding: 15px 20px; /* Padding lebih besar */
+      margin: 10px 0;
+      width: 280px; /* Lebar lebih besar */
+      border: 1px solid rgba(255, 255, 255, 0.3); /* Border semi-transparan putih */
+      border-radius: 8px; /* Sudut lebih membulat */
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.1); /* Latar belakang input semi-transparan */
+      color: white; /* Warna teks input putih */
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: background 0.3s;
+    }
+
+    /* Mengubah warna placeholder menjadi lebih terang */
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    input:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    input[readonly] {
+      background: rgba(255, 255, 255, 0.05); /* Latar belakang readonly sedikit berbeda */
+    }
+
+    /* Styling untuk tombol */
+    button {
+      padding: 15px 30px; /* Padding lebih besar */
+      margin: 10px 5px;
+      width: 140px; /* Lebar tombol yang lebih jelas */
+      border: none;
+      border-radius: 25px; /* Tombol lebih membulat */
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    /* Tombol Save */
+    #save {
+      background-color: #1e40af; /* Warna biru primer */
+      color: white;
+    }
+
+    #save:hover {
+      background-color: #1e3a8a;
+      transform: translateY(-2px);
+    }
+
+    /* Tombol Admin */
+    #adminBtn {
+      background-color: #f59e0b; /* Warna kuning/oranye sekunder */
+      color: white;
+    }
+
+    #adminBtn:hover {
+      background-color: #d97706;
+      transform: translateY(-2px);
+    }
+
+    #msg {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #dc2626; /* Biarkan merah untuk error */
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    /* Kontainer Glassmorphism (Kaca Buram) */
+    .container {
+      background: rgba(255, 255, 255, 0.15); /* Latar belakang semi-transparan */
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      backdrop-filter: blur(10px); /* Efek buram */
+      -webkit-backdrop-filter: blur(10px); /* Untuk kompatibilitas browser */
+      border: 1px solid rgba(255, 255, 255, 0.18); /* Border semi-transparan */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 400px; /* Batasi lebar */
+    }
+    
+    /* Tombol sosial media, meskipun tidak ada di fungsionalitas Anda,
+       kita tambahkan agar tampilannya lebih mirip */
+    .social-buttons {
+        margin-top: 15px;
+    }
+    .social-buttons img {
+        width: 30px;
+        height: 30px;
+        margin: 0 10px;
+        cursor: pointer;
+    }
+    
+    .button-group {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 300px;
+        margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Generate API Key</h1>
+    <input type="text" id="firstname" placeholder="First Name">
+    <input type="text" id="lastname" placeholder="Last Name">
+    <input type="email" id="email" placeholder="Email">
+    <input type="text" id="apikey" placeholder="API Key" readonly>
+    
+    <div class="button-group">
+        <button id="save">Save</button>
+        <button id="adminBtn">Admin</button>
+    </div>
+    
+    <div id="msg"></div>
+    
+
+    
+  </div>
+
+  <script>
+    // Fungsionalitas JavaScript tetap SAMA
+    document.getElementById("save").onclick = async () => {
+      const firstname = document.getElementById("firstname").value;
+      const lastname  = document.getElementById("lastname").value;
+      const email     = document.getElementById("email").value;
+      const apikey    = document.getElementById("apikey");
+      const msg       = document.getElementById("msg");
+
+      try {
+        const res = await fetch("/api/apikey/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ firstname, lastname, email })
+        });
+        if (!res.ok) throw new Error("Gagal membuat API key");
+
+        const data = await res.json();
+        apikey.value = data.key;
+        msg.style.color = "green";
+        msg.innerText = `API Key berhasil dibuat: ${data.key}`;
+      } catch (err) {
+        msg.style.color = "red";
+        msg.innerText = `Error: ${err.message}`;
+      }
+    };
+
+    document.getElementById("adminBtn").onclick = () => {
+      window.location.href = "admin.html";
+    };
+  </script>
+</body>
+</html>
