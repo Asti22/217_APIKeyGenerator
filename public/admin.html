@@ -1,310 +1,454 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Panel</title>
-<style>
-  /* Warna Dasar Laut */
-  :root {
-    --primary-blue: #0077b6; /* Biru Laut Tua (Dominan) */
-    --secondary-blue: #00b4d8; /* Biru Muda Segar */
-    --background-light: #e0f7fa; /* Biru Muda Sangat Terang */
-    --text-dark: #03045e; /* Biru Navy untuk Teks */
-    --button-success: #48cae4; /* Biru Aquamarine untuk Register */
-    --button-warning: #ffb703; /* Kuning Cerah untuk Switch/Aksen */
-    --button-danger: #ef476f; /* Merah Coral untuk Logout/Delete */
-    --shadow-color: rgba(0, 119, 182, 0.2);
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
 
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: var(--background-light); /* Latar Belakang Biru Muda Sangat Terang */
-    display: flex;
-    justify-content: center;
-    align-items: flex-start; /* Pusatkan ke atas */
-    min-height: 100vh;
-    padding: 40px 20px;
-  }
+  <style>
+    /* ===== GLOBAL BLUE BACKGROUND (LAYER 1 – Biru muda) ===== */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #b7dcfa ; /* BIRU MUDA */
+      margin: 0;
+      padding: 40px 20px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
 
-  .container {
-    background: rgb(255, 255, 255);
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px var(--shadow-color); /* Bayangan dengan nuansa biru */
-    width: 100%;
-    max-width: 1000px;
-    border: 1px solid #b3e5fc; /* Border tipis biru muda */
-  }
-
-  h1, h2, h3 { 
-    color: var(--text-dark); /* Teks Biru Navy */
-    border-bottom: 2px solid var(--secondary-blue);
-    padding-bottom: 10px;
-    margin-top: 20px;
-  }
-  
-  h1 { text-align: center; }
-
-  input { 
-    padding: 12px; 
-    margin: 8px 0; 
-    width: 100%; 
-    border-radius: 8px; 
-    border: 1px solid #b3e5fc; 
-    font-size: 16px; 
-    box-sizing: border-box; /* Penting agar padding tidak melebarkan input */
-    transition: border-color 0.3s;
-  }
-  input:focus {
-    border-color: var(--secondary-blue);
-    outline: none;
-    box-shadow: 0 0 5px rgba(0, 180, 216, 0.5);
-  }
-
-  button { 
-    padding: 12px 25px; 
-    margin: 10px 5px 15px 0; 
-    border: none; 
-    border-radius: 25px; /* Tombol membulat */
-    cursor: pointer; 
-    color: white; 
-    font-size: 16px;
-    font-weight: bold;
-    transition: background-color 0.3s, transform 0.2s;
-  }
-
-  /* Warna Tombol */
-  .btn-login { background: var(--primary-blue); } 
-  .btn-register { background: var(--button-success); } 
-  .btn-logout { background: var(--button-danger); }
-  .btn-switch { background: var(--button-warning); }
-  /* Warna tombol di dalam tabel */
-  td button {
-    background: var(--button-danger);
-    padding: 8px 15px;
-    border-radius: 5px;
-    font-size: 14px;
-    margin: 0;
-  }
-
-  button:hover { 
-    opacity: 1; 
-    filter: brightness(1.1);
-    transform: translateY(-1px);
-  }
-
-  .msg { font-weight: bold; margin: 15px 0; padding: 10px; border-radius: 5px; }
-  .green { color: var(--text-dark); background: #ccffcc; border: 1px solid #a3c4a3; }
-  .red { color: #8a0304; background: #ffcccc; border: 1px solid #c4a3a3; }
-
-  /* Styling Tabel */
-  table { 
-    width: 100%; 
-    border-collapse: separate; 
-    border-spacing: 0;
-    margin: 20px 0; 
-    border-radius: 10px;
-    overflow: hidden; 
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  }
-  
-  th { 
-    background-color: var(--secondary-blue); 
-    color: white; 
-    padding: 15px 8px; 
-    text-align: left;
-  }
-  td { 
-    padding: 12px 8px; 
-    text-align: left;
-    border-bottom: 1px solid #f0f0f0; 
-  }
-  
-  /* Garis horizontal dan warna baris */
-  tr:nth-child(even) { background-color: #f8f8f8; } 
-  tr:hover { background-color: #e6f7ff; } 
-  
-  /* Menghilangkan border pada tabel */
-  table, th, td { border: none; }
-  
-  /* Kolom status */
-  .status-on { color: var(--button-success); font-weight: bold; }
-  .status-off { color: var(--button-danger); font-weight: bold; }
-
-  .hidden { display:none; }
-
-  /* *** PERUBAHAN UTAMA: Mengecilkan dan memusatkan form Login/Register *** */
-  #loginDiv, #registerDiv {
-      padding: 20px;
-      border: 1px solid #b3e5fc;
-      border-radius: 10px;
-      max-width: 400px; /* Lebar Maksimum yang Lebih Kecil */
-      margin: 20px auto; /* Memastikan Form berada di tengah */
-  }
-  
-  #dashboardDiv h3 {
-      margin-top: 30px;
-      color: var(--primary-blue);
-  }
-</style>
-</head>
-<body>
-<div class="container">
-
-  <div id="loginDiv">
-    <h1>Login Admin</h1>
-    <input type="email" id="loginEmail" placeholder="Email">
-    <input type="password" id="loginPassword" placeholder="Password">
-    <button id="loginBtn" class="btn-login">Login</button>
-    <button id="goRegisterBtn" class="btn-switch">Register</button>
-    <div id="loginMsg" class="msg"></div>
-  </div>
-
-  <div id="registerDiv" class="hidden">
-    <h1>Register New Admin</h1>
-    <input type="email" id="regEmail" placeholder="Email">
-    <input type="password" id="regPassword" placeholder="Password">
-    <button id="regBtn" class="btn-register">Register</button>
-    <button id="backLoginBtn" class="btn-switch">Back to Login</button>
-    <div id="regMsg" class="msg"></div>
-  </div>
-
-  <div id="dashboardDiv" class="hidden">
-    <h2>🌊 Selamat Datang di Admin Dashboard</h2>
-    <button id="logoutBtn" class="btn-logout">Logout</button>
-
-    <h3>Data Pengguna</h3>
-    <table>
-      <thead>
-        <tr><th>ID</th><th>Firstname</th><th>Lastname</th><th>Email</th><th>Action</th></tr>
-      </thead>
-      <tbody id="userTable"></tbody>
-    </table>
-
-    <h3>API Keys Aktif</h3>
-    <table>
-      <thead>
-        <tr><th>ID</th><th>Key</th><th>User ID</th><th>Status</th><th>Out of Date</th><th>Action</th></tr>
-      </thead>
-      <tbody id="keyTable"></tbody>
-    </table>
-  </div>
-
-</div>
-
-<script>
-let token = null;
-
-// Switch divs
-const loginDiv = document.getElementById("loginDiv");
-const registerDiv = document.getElementById("registerDiv");
-const dashboardDiv = document.getElementById("dashboardDiv");
-
-document.getElementById("goRegisterBtn").onclick = () => {
-  loginDiv.classList.add("hidden");
-  registerDiv.classList.remove("hidden");
-};
-document.getElementById("backLoginBtn").onclick = () => {
-  registerDiv.classList.add("hidden");
-  loginDiv.classList.remove("hidden");
-};
-
-// REGISTER
-document.getElementById("regBtn").onclick = async () => {
-  const email = document.getElementById("regEmail").value;
-  const password = document.getElementById("regPassword").value;
-  const res = await fetch("/api/admin/register", {
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({email,password})
-  });
-  const data = await res.json();
-  const msg = document.getElementById("regMsg");
-  msg.innerText = data.message;
-  msg.className = data.token ? "msg green" : "msg red"; 
-};
-
-// LOGIN
-document.getElementById("loginBtn").onclick = async () => {
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
-  const res = await fetch("/api/admin/login", {
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({email,password})
-  });
-  const data = await res.json();
-  const msg = document.getElementById("loginMsg");
-
-  if(data.token){
-    token = data.token;
-    loginDiv.classList.add("hidden");
-    dashboardDiv.classList.remove("hidden");
-    msg.innerText = "";
-    loadUsers();
-    loadKeys();
-  } else {
-    msg.innerText = data.message;
-    msg.className = "msg red"; 
-  }
-};
-
-// LOGOUT
-document.getElementById("logoutBtn").onclick = () => {
-  token = null;
-  dashboardDiv.classList.add("hidden");
-  loginDiv.classList.remove("hidden");
-  document.getElementById("userTable").innerHTML="";
-  document.getElementById("keyTable").innerHTML="";
-  alert("Logout berhasil");
-};
-
-// LOAD USERS
-async function loadUsers(){
-  const res = await fetch("/api/apikey/all",{ headers:{Authorization:`Bearer ${token}`} });
-  const data = await res.json();
-  const tbody = document.getElementById("userTable");
-  tbody.innerHTML="";
-  data.forEach(u=>{
-    const tr=document.createElement("tr");
-    tr.innerHTML=`<td>${u.id}</td><td>${u.firstname}</td><td>${u.lastname}</td><td>${u.email}</td>
-      <td><button onclick="deleteUser(${u.id})">Delete</button></td>`;
-    tbody.appendChild(tr);
-  });
-}
-
-// LOAD KEYS
-async function loadKeys(){
-  const res = await fetch("/api/apikey/keys",{ headers:{Authorization:`Bearer ${token}`} });
-  const data = await res.json();
-  const tbody=document.getElementById("keyTable");
-  tbody.innerHTML="";
-  const now = new Date();
-  data.forEach(k=>{
-    const isOutOfDate = new Date(k.out_of_date)<now;
-    const statusText = isOutOfDate ? "expired":"active";
-    const statusClass = isOutOfDate ? "status-off" : "status-on"; 
+    /* ===== CONTAINER (LAYER 2 – Biru lebih tua) ===== */
     
-    const tr=document.createElement("tr");
-    tr.innerHTML=`<td>${k.id}</td><td>${k.key}</td><td>${k.user_id}</td><td class="${statusClass}">${statusText}</td><td>${k.out_of_date}</td>
-      <td><button onclick="deleteKey(${k.id})">Delete</button></td>`;
-    tbody.appendChild(tr);
-  });
-}
 
-// DELETE USER
-async function deleteUser(id){
-  await fetch(`/api/apikey/delete/${id}`,{method:"DELETE", headers:{Authorization:`Bearer ${token}`}});
-  loadUsers();
-  loadKeys();
-}
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(25px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-// DELETE KEY
-async function deleteKey(id){
-  await fetch(`/api/apikey/key/${id}`,{method:"DELETE", headers:{Authorization:`Bearer ${token}`}});
-  loadKeys();
-}
-</script>
+    /* ===== AUTH FORM (LAYER 3 – Biru Tua) ===== */
+    .auth-form {
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 35px 25px;
+      border-radius: 18px;
+
+      background: #0284c7; /* BIRU TUA */
+      color: white;
+
+      box-shadow: 0px 8px 20px rgba(0,0,0,0.15);
+      animation: zoom 0.4s ease;
+    }
+
+    @keyframes zoom {
+      from { transform: scale(0.93); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .auth-form h2 {
+      margin-bottom: 18px;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .auth-form input {
+      width: 92%;
+      padding: 12px;
+      margin: 9px 0;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      background: #f0f9ff;
+      transition: 0.3s ease;
+    }
+
+    .auth-form input:focus {
+      border: 2px solid white;
+      outline: none;
+      box-shadow: 0 0 6px #bae6fd;
+    }
+
+    /* BUTTON LOGIN / REGISTER */
+    .auth-form button#auth-btn {
+      width: 92%;
+      background: #0ea5e9;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: 0.3s ease;
+    }
+
+    .auth-form button#auth-btn:hover {
+      background: #0369a1;
+      transform: translateY(-2px);
+    }
+
+    /* tombol kecil - switch login/register */
+    #toggle-mode {
+      background: #38bdf8;
+      color: white;
+      border: none;
+      padding: 7px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-left: 5px;
+      transition: 0.25s;
+    }
+
+    #toggle-mode:hover {
+      background: #0ea5e9;
+      transform: translateY(-2px);
+    }
+
+    #auth-message {
+      margin-top: 15px;
+      font-weight: bold;
+      min-height: 20px;
+    }
+
+    /* ================ DASHBOARD ================ */
+    .dashboard-content { display: none; }
+
+    h1 { color: #ffffff; }
+    h3 { color: white; border-bottom: 2px solid white; padding-bottom: 10px; }
+
+    .btn-logout { 
+      background-color: #ef4444; 
+      color: white; 
+      border: none; 
+      padding: 10px 20px; 
+      border-radius: 20px; 
+      font-weight: bold; 
+      cursor: pointer; 
+      margin-bottom: 20px; 
+    }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; }
+    th { background: #0284c7; color: white; }
+    td, th { padding: 12px 15px; text-align: left; }
+
+    .btn-delete { 
+      background-color: #ef4444; 
+      color: white; 
+      border: none; 
+      padding: 6px 12px; 
+      border-radius: 6px; 
+      cursor: pointer; 
+      font-size: 0.8rem; 
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <!-- ========== AUTH SECTION ========== -->
+    <div id="auth-section">
+        <div class="auth-form">
+            <h2 id="form-title">Admin Login</h2>
+
+            <input type="email" id="auth-email" placeholder="Email Admin">
+            <input type="password" id="auth-password" placeholder="Password Admin">
+
+            <button id="auth-btn">Login</button>
+
+            <div id="auth-message"></div>
+
+            <hr style="margin: 25px 0; border-color:#ffffff55;">
+
+            <p style="font-size: 0.95rem; color:white;">
+                <span id="toggle-text">Belum punya akun?</span>
+                <button id="toggle-mode">Register</button>
+            </p>
+        </div>
+    </div>
+
+    <!-- ========== DASHBOARD ========== -->
+    <div class="dashboard-content" id="dashboard-section">
+       <h1 style="color: #08249d;">🌊 Selamat Datang di Admin Dashboard</h1>
+
+        <button class="btn-logout">Logout</button>
+
+        <h3 style="color: #08249d;"></h3style>Data Pengguna</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Firstname</th>
+              <th>Lastname</th>
+              <th>Email</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="userTable"></tbody>
+        </table>
+
+        <h3 style="color: #08249d;">API Keys Aktif</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Key Preview</th>
+              <th>User ID</th>
+              <th>Status</th>
+              <th>Active Date</th>
+              <th>Out of Date</th>
+              <th>Last Updated</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="keyTable"></tbody>
+        </table>
+    </div>
+
+  </div>
+
+
+  <!-- ===== JAVASCRIPT ASLI (TIDAK DIUBAH SATUPUN) ===== -->
+  <script>
+    /* === SEMUA JAVASCRIPT DIBIARKAN APA ADANYA === */
+
+    const API_USER_URL = "/api/user/all";
+    const API_KEY_URL = "/api/user/apikey/all"; 
+    const DELETE_USER_URL = "/api/user";    
+    const DELETE_KEY_URL = "/api/user/apikey";   
+    const AUTH_LOGIN_URL = "/api/admin/login";
+    const AUTH_REGISTER_URL = "/api/admin/register";
+
+    const dashboard = document.getElementById("dashboard-section");
+    const authSection = document.getElementById("auth-section");
+    const authMessage = document.getElementById("auth-message");
+    const authBtn = document.getElementById("auth-btn");
+    const toggleBtn = document.getElementById("toggle-mode");
+    const title = document.getElementById("form-title");
+    const toggleText = document.getElementById("toggle-text");
+    const emailInput = document.getElementById("auth-email");
+    const passwordInput = document.getElementById("auth-password");
+
+    let isLoginMode = true; 
+
+    function getAuthHeaders() {
+        const token = localStorage.getItem('adminToken');
+        return {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+        };
+    }
+
+    function showDashboardView() {
+        authSection.style.display = 'none';
+        dashboard.style.display = 'block';
+        loadUsers();
+        loadKeys();
+    }
+
+    function showAuthView() {
+        localStorage.removeItem('adminToken');
+        dashboard.style.display = 'none';
+        authSection.style.display = 'block';
+        isLoginMode = true;
+        title.innerText = "Admin Login";
+        authBtn.innerText = "Login";
+        toggleText.innerText = "Belum punya akun?";
+        toggleBtn.innerText = "Register";
+        authMessage.innerText = "";
+        emailInput.value = "";
+        passwordInput.value = "";
+        authBtn.style.backgroundColor = '#0ea5e9';
+    }
+
+    const handleAuth = async () => {
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        authMessage.innerText = "";
+        
+        const url = isLoginMode ? AUTH_LOGIN_URL : AUTH_REGISTER_URL;
+        
+        try {
+            const res = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await res.json();
+            
+            if (!res.ok) throw new Error(data.message || "Permintaan gagal");
+            
+            if (isLoginMode) {
+                localStorage.setItem('adminToken', data.token);
+                showDashboardView(); 
+            } else {
+                authMessage.style.color = 'green';
+                authMessage.innerText = data.message || "Register Berhasil! Silakan Login.";
+                toggleMode(); 
+            }
+
+        } catch (err) {
+            authMessage.style.color = 'red';
+            authMessage.innerText = err.message;
+        }
+    };
+
+    const toggleMode = () => {
+        isLoginMode = !isLoginMode;
+        authMessage.innerText = "";
+        emailInput.value = "";
+        passwordInput.value = "";
+
+        if (isLoginMode) {
+            title.innerText = "Admin Login";
+            authBtn.innerText = "Login";
+            toggleText.innerText = "Belum punya akun?";
+            toggleBtn.innerText = "Register";
+            authBtn.style.backgroundColor = '#0ea5e9';
+        } else {
+            title.innerText = "Admin Register";
+            authBtn.innerText = "Register Akun";
+            toggleText.innerText = "Sudah punya akun?";
+            toggleBtn.innerText = "Login";
+            authBtn.style.backgroundColor = '#06b6d4';
+        }
+    };
+    
+    authBtn.addEventListener('click', handleAuth);
+    toggleBtn.addEventListener('click', toggleMode);
+    document.querySelector(".btn-logout").addEventListener("click", showAuthView);
+
+    async function loadUsers() {
+        try {
+            const res = await fetch(API_USER_URL, { headers: getAuthHeaders() });
+            if (res.status === 401) return showAuthView(); 
+            if (!res.ok) throw new Error(`HTTP error!`);
+
+            const users = await res.json();
+            const tableBody = document.getElementById("userTable");
+            tableBody.innerHTML = ""; 
+
+            if(users.length === 0) {
+                tableBody.innerHTML = "<tr><td colspan='5' style='text-align:center'>Belum ada data user</td></tr>";
+                return;
+            }
+
+            users.forEach(user => {
+                const row = `
+                    <tr>
+                        <td>${user.id}</td>
+                        <td>${user.firstname}</td>
+                        <td>${user.lastname}</td>
+                        <td>${user.email}</td>
+                        <td>
+                            <button class="btn-delete" onclick="deleteUser(${user.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        } catch (err) {
+            document.getElementById("userTable").innerHTML =
+              "<tr><td colspan='5' style='text-align:center;color:red;'>Gagal mengambil data users.</td></tr>";
+        }
+    }
+
+    async function loadKeys() {
+        try {
+            const res = await fetch(API_KEY_URL, { headers: getAuthHeaders() }); 
+            if (res.status === 401) return showAuthView();
+            if (!res.ok) throw new Error(`HTTP error!`);
+
+            const keys = await res.json();
+            const tableBody = document.getElementById("keyTable");
+            tableBody.innerHTML = ""; 
+
+            if(keys.length === 0) {
+                tableBody.innerHTML = "<tr><td colspan='8' style='text-align:center'>Belum ada API Key</td></tr>";
+                return;
+            }
+
+            keys.forEach(key => {
+                const outDateStr = new Date(key.out_of_date).toLocaleString();
+                const createdDateStr = new Date(key.created_at).toLocaleString();
+                const updatedDateStr = new Date(key.updated_at).toLocaleString();
+                const userIdDisplay = key.user_id === null ? "-" : key.user_id;
+
+                const row = `
+                    <tr>
+                        <td>${key.id}</td>
+                        <td title="${key.api_key}">${key.api_key.substring(0, 15)}...</td>
+                        <td>${userIdDisplay}</td>
+                        <td>
+                            <span style="padding:4px 8px;border-radius:4px;background:${
+                              key.status === "on" ? "#dcfce7" : "#fee2e2"
+                            };color:${
+                              key.status === "on" ? "#166534" : "#991b1b"
+                            };font-weight:bold;">${key.status}</span>
+                        </td>
+                        <td>${createdDateStr}</td>
+                        <td>${outDateStr}</td>
+                        <td>${updatedDateStr}</td>
+                        <td>
+                             <button class="btn-delete" onclick="deleteKey(${key.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        } catch (err) {
+            document.getElementById("keyTable").innerHTML =
+                "<tr><td colspan='8' style='text-align:center;color:red;'>Gagal mengambil data keys.</td></tr>";
+        }
+    }
+
+    async function deleteUser(id) {
+        if(!confirm("Yakin mau hapus user ini?")) return;
+        try {
+            const res = await fetch(`${DELETE_USER_URL}/${id}`, { 
+              method: "DELETE", 
+              headers: getAuthHeaders() 
+            });
+
+            if (res.status === 401) return showAuthView(); 
+            if (!res.ok) throw new Error("Gagal menghapus user");
+            
+            loadUsers(); 
+            loadKeys();  
+        } catch (err) {
+            alert("Gagal hapus user: " + err.message);
+        }
+    }
+
+    async function deleteKey(id) {
+        if(!confirm("Yakin mau hapus key ini?")) return;
+        try {
+            const res = await fetch(`${DELETE_KEY_URL}/${id}`, { 
+              method: "DELETE", 
+              headers: getAuthHeaders() 
+            });
+
+            if (res.status === 401) return showAuthView(); 
+            if (!res.ok) throw new Error("Gagal menghapus key");
+
+            loadKeys();
+        } catch (err) {
+            alert("Gagal hapus key: " + err.message);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        if (localStorage.getItem('adminToken')) {
+             showDashboardView();
+        } else {
+             showAuthView();
+        }
+    });
+  </script>
+
 </body>
 </html>

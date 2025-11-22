@@ -114,18 +114,6 @@
       max-width: 400px; /* Batasi lebar */
     }
     
-    /* Tombol sosial media, meskipun tidak ada di fungsionalitas Anda,
-       kita tambahkan agar tampilannya lebih mirip */
-    .social-buttons {
-        margin-top: 15px;
-    }
-    .social-buttons img {
-        width: 30px;
-        height: 30px;
-        margin: 0 10px;
-        cursor: pointer;
-    }
-    
     .button-group {
         display: flex;
         justify-content: space-between;
@@ -149,13 +137,9 @@
     </div>
     
     <div id="msg"></div>
-    
-
-    
   </div>
 
   <script>
-    // Fungsionalitas JavaScript tetap SAMA
     document.getElementById("save").onclick = async () => {
       const firstname = document.getElementById("firstname").value;
       const lastname  = document.getElementById("lastname").value;
@@ -163,18 +147,31 @@
       const apikey    = document.getElementById("apikey");
       const msg       = document.getElementById("msg");
 
+      // Reset pesan
+      msg.innerText = "";
+      msg.style.color = "black";
+
       try {
-        const res = await fetch("/api/apikey/create", {
+        // Pastikan URL endpoint ini sesuai dengan route di server.js kamu
+        // Jika kamu pakai route user, mungkin URLnya: /api/user/create
+        const res = await fetch("/api/user/create", { 
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ firstname, lastname, email })
         });
-        if (!res.ok) throw new Error("Gagal membuat API key");
 
         const data = await res.json();
-        apikey.value = data.key;
+
+        if (!res.ok) {
+          throw new Error(data.message || "Gagal membuat API key");
+        }
+
+        // PERBAIKAN DISINI: Menggunakan data.api_key (bukan data.key)
+        apikey.value = data.api_key;
+        
         msg.style.color = "green";
-        msg.innerText = `API Key berhasil dibuat: ${data.key}`;
+        msg.innerText = `API Key berhasil dibuat: ${data.api_key}`;
+        
       } catch (err) {
         msg.style.color = "red";
         msg.innerText = `Error: ${err.message}`;

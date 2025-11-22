@@ -1,43 +1,35 @@
 const crypto = require("crypto");
 const db = require("../db");
 
-// Generate API key
+// ONLY generate API key (tanpa simpan)
 exports.generate = (req, res) => {
-  const key = crypto.randomBytes(24).toString("hex");
-  res.json({ key });
+  const apiKey = crypto.randomBytes(24).toString("hex");
+  res.json({ api_key: apiKey });
 };
 
-// Create user + API key
-exports.create = (req, res) => {
-  const { firstname, lastname, email } = req.body;
+// Create API key baru (tanpa user)
+exports.create = async (req, res) => {
+  try {
+    const apiKey = crypto.randomBytes(24).toString("hex");
+    
+    // FIX: Format tanggal untuk MySQL
+    const out_of_date = new Date(Date.now() + 7*24*3600*1000)
+      .toISOString()
+      .slice(0, 19)
+      .replace('T', ' ');
 
-  // auto generate API key
-  const apiKey = crypto.randomBytes(24).toString("hex");
+    await db.execute(
+      "INSERT INTO api_keys (api_key, status, out_of_date) VALUES (?, 'on', ?)",
+      [apiKey, out_of_date] // Sekarang menggunakan string yang diformat
+    );
 
-  db.query(
-    "INSERT INTO users (firstname, lastname, email, api_key) VALUES (?,?,?,?)",
-    [firstname, lastname, email, apiKey],
-    (err, result) => {
-      if (err) return res.status(500).json({ error: err.message });
+    res.json({
+      message: "API key dibuat",
+      api_key: apiKey,
+      out_of_date
+    });
 
-      const userId = result.insertId;
-
-      const out = new Date(Date.now() + 30 * 24 * 3600 * 1000); // 30 hari
-
-      db.query(
-        "INSERT INTO api_keys (`key`, user_id, status, out_of_date) VALUES (?,?,?,?)",
-        [apiKey, userId, "on", out],
-        (err2) => {
-          if (err2) return res.status(500).json({ error: err2.message });
-
-          res.json({
-            message: "User + API key created",
-            user_id: userId,
-            api_key: apiKey,
-            out_of_date: out
-          });
-        }
-      );
-    }
-  );
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
